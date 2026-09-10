@@ -4,7 +4,7 @@
 **Severity:** Medium
 **Date Detected:** September 9, 2026
 **Analyst:** Dhim Escuyos
-**Affected System:** Ubuntu-Victim (192.168.1.178)
+**Affected System:** Ubuntu-Victim (192.168.x.x)
 **MITRE ATT&CK:** T1110 — Brute Force
 
 ## Summary
@@ -34,7 +34,7 @@ with human error and consistent with automated password-guessing
 tooling.
 
 ## Root Cause
-Source host (192.168.1.177) executed an automated brute-force attack
+Source host (192.168.x.x) executed an automated brute-force attack
 using Hydra against the SSH service, leveraging a common leaked-
 password wordlist (rockyou.txt).
 

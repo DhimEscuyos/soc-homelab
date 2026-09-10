@@ -2,7 +2,7 @@
 
 **Date:** September 9-10, 2026
 **MITRE ATT&CK Technique:** T1110 — Brute Force
-**Source:** Kali Linux attacker VM (192.168.1.177)
+**Source:** Kali Linux attacker VM (192.168.x.x)
 
 ## Objective
 Simulate real-world brute-force attacks against both a Linux endpoint
@@ -12,11 +12,11 @@ implement/verify a remediation.
 
 ---
 
-## Part 1: SSH Brute-Force — Ubuntu-Victim (192.168.1.178)
+## Part 1: SSH Brute-Force — Ubuntu-Victim (192.168.x.x)
 
 ### Attack Execution
 ```bash
-hydra -l socanalyst -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.1.178 -t 4
+hydra -l socanalyst -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.x.x -t 4
 ```
 
 ### Detection Results
@@ -44,7 +44,7 @@ repeated-failure pattern — no custom rule required.
 
 ---
 
-## Part 2: RDP Brute-Force — Windows-Victim (192.168.1.179)
+## Part 2: RDP Brute-Force — Windows-Victim (192.168.x.x)
 
 ### Pre-Attack Troubleshooting
 The initial attack attempt failed with connection errors. Root cause
@@ -67,7 +67,7 @@ A further connection error persisted after these fixes. Verified RDP
 itself was functioning correctly using a manual connection attempt
 with a deliberately wrong password:
 ```bash
-xfreerdp /v:192.168.1.179 /u:Administrator /p:wrongpassword /cert:ignore
+xfreerdp /v:192.168.x.x /u:Administrator /p:wrongpassword /cert:ignore
 ```
 This returned `ERRCONNECT_LOGON_FAILURE` — confirming the connection
 and authentication negotiation worked correctly, isolating the
@@ -76,7 +76,7 @@ own documentation as "experimental"). Adjusting to a single-threaded,
 slower attempt resolved it:
 
 ```bash
-hydra -l Administrator -P /usr/share/wordlists/rockyou.txt.gz rdp://192.168.1.179 -t 1 -W 5
+hydra -l Administrator -P /usr/share/wordlists/rockyou.txt.gz rdp://192.168.x.x -t 1 -W 5
 ```
 
 ### Detection Results
