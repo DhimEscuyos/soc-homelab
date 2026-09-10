@@ -2,20 +2,21 @@
 
 **Date:** September 9-10, 2026
 **MITRE ATT&CK Technique:** T1110 — Brute Force
-**Source:** Kali Linux attacker VM (192.168.x.x)
+**Source:** Kali Linux attacker VM (192.168.1.177)
 
 ## Objective
 Simulate real-world brute-force attacks against both a Linux endpoint
-(via SSH) and a Windows endpoint (via RDP), and verify that the Wazuh
-SIEM correctly detects and escalates the activity on both platforms.
+(via SSH) and a Windows endpoint (via RDP), verify that the Wazuh SIEM
+correctly detects and escalates the activity on both platforms, and
+implement/verify a remediation.
 
 ---
 
-## Part 1: SSH Brute-Force — Ubuntu-Victim (192.168.x.x)
+## Part 1: SSH Brute-Force — Ubuntu-Victim (192.168.1.178)
 
 ### Attack Execution
 ```bash
-hydra -l socanalyst -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.x.x -t 4
+hydra -l socanalyst -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.1.178 -t 4
 ```
 
 ### Detection Results
@@ -43,7 +44,7 @@ repeated-failure pattern — no custom rule required.
 
 ---
 
-## Part 2: RDP Brute-Force — Windows-Victim (192.168.x.x)
+## Part 2: RDP Brute-Force — Windows-Victim (192.168.1.179)
 
 ### Pre-Attack Troubleshooting
 The initial attack attempt failed with connection errors. Root cause
@@ -66,7 +67,7 @@ A further connection error persisted after these fixes. Verified RDP
 itself was functioning correctly using a manual connection attempt
 with a deliberately wrong password:
 ```bash
-xfreerdp /v:192.168.x.x /u:Administrator /p:wrongpassword /cert:ignore
+xfreerdp /v:192.168.1.179 /u:Administrator /p:wrongpassword /cert:ignore
 ```
 This returned `ERRCONNECT_LOGON_FAILURE` — confirming the connection
 and authentication negotiation worked correctly, isolating the
@@ -75,7 +76,7 @@ own documentation as "experimental"). Adjusting to a single-threaded,
 slower attempt resolved it:
 
 ```bash
-hydra -l Administrator -P /usr/share/wordlists/rockyou.txt.gz rdp://192.168.x.x -t 1 -W 5
+hydra -l Administrator -P /usr/share/wordlists/rockyou.txt.gz rdp://192.168.1.179 -t 1 -W 5
 ```
 
 ### Detection Results
@@ -93,10 +94,37 @@ hydra -l Administrator -P /usr/share/wordlists/rockyou.txt.gz rdp://192.168.x.x 
 
 ---
 
+## Remediation Verification — RDP Account Lockout
+
+Following the recommendation below, implemented an account lockout
+policy on Windows-Victim via Local Security Policy
+(`secpol.msc` → Account Policies → Account Lockout Policy):
+- **Lockout threshold:** 5 invalid attempts
+
+### Re-Test
+Re-ran the identical Hydra RDP attack. Results:
+
+| Rule ID | Description | Level |
+|---|---|---|
+| 60122 | Logon Failure - Unknown user or bad password | 5 |
+| **60115** | **User account locked out (multiple login errors)** | **9** |
+
+After the 5th failed attempt, Wazuh detected and logged the account
+lockout event, confirming the mitigation successfully halts sustained
+brute-force attempts.
+
+### Conclusion
+This demonstrates a complete security workflow: detection → root
+cause → recommendation → implementation → verification. The account
+lockout policy provides effective, low-complexity protection against
+brute-force attacks even without more advanced controls like MFA.
+
+---
+
 ## Recommended Response (if this were a real environment)
 - Block or rate-limit the source IP at the firewall
 - Enforce key-based SSH authentication and/or MFA for RDP
-- Enable account lockout policies after repeated failures
+- **Enable account lockout policies after repeated failures — implemented and verified above**
 - Review whether brute-forced accounts should have remote access at all
 
 ## Skills Demonstrated
@@ -108,4 +136,5 @@ hydra -l Administrator -P /usr/share/wordlists/rockyou.txt.gz rdp://192.168.x.x 
 - Root-cause troubleshooting across service, registry, and firewall
   layers
 - Critical evaluation of automated MITRE ATT&CK tagging
+- **End-to-end security workflow: detection, remediation, and verification testing**
 - Incident documentation
