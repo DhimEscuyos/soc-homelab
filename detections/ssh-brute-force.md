@@ -1,10 +1,19 @@
-# Detection: Brute-Force Attacks (SSH + RDP)
+<div align="center">
+
+# 🔓 Detection: Brute-Force Attacks (SSH + RDP)
+
+![Severity](https://img.shields.io/badge/severity-Level%2010-DC2626?style=flat-square)
+![MITRE](https://img.shields.io/badge/MITRE%20ATT%26CK-T1110%20Brute%20Force-2563EB?style=flat-square)
+![Status](https://img.shields.io/badge/status-Detected%20%26%20Remediated-16A34A?style=flat-square)
+
+</div>
 
 **Date:** September 9-10, 2026
-**MITRE ATT&CK Technique:** T1110 — Brute Force
 **Source:** Kali Linux attacker VM (192.168.x.x)
 
-## Objective
+---
+
+## 🎯 Objective
 Simulate real-world brute-force attacks against both a Linux endpoint
 (via SSH) and a Windows endpoint (via RDP), verify that the Wazuh SIEM
 correctly detects and escalates the activity on both platforms, and
@@ -12,7 +21,7 @@ implement/verify a remediation.
 
 ---
 
-## Part 1: SSH Brute-Force — Ubuntu-Victim (192.168.x.x)
+## 1️⃣ SSH Brute-Force — Ubuntu-Victim (192.168.x.x)
 
 ### Attack Execution
 ```bash
@@ -44,7 +53,7 @@ repeated-failure pattern — no custom rule required.
 
 ---
 
-## Part 2: RDP Brute-Force — Windows-Victim (192.168.x.x)
+## 2️⃣ RDP Brute-Force — Windows-Victim (192.168.x.x)
 
 ### Pre-Attack Troubleshooting
 The initial attack attempt failed with connection errors. Root cause
@@ -94,7 +103,7 @@ hydra -l Administrator -P /usr/share/wordlists/rockyou.txt.gz rdp://192.168.x.x 
 
 ---
 
-## Remediation Verification — RDP Account Lockout
+## 🛠️ Remediation Verification — RDP Account Lockout
 
 Following the recommendation below, implemented an account lockout
 policy on Windows-Victim via Local Security Policy
@@ -121,13 +130,15 @@ brute-force attacks even without more advanced controls like MFA.
 
 ---
 
-## Recommended Response (if this were a real environment)
+## 📌 Recommended Response (if this were a real environment)
 - Block or rate-limit the source IP at the firewall
 - Enforce key-based SSH authentication and/or MFA for RDP
 - **Enable account lockout policies after repeated failures — implemented and verified above**
 - Review whether brute-forced accounts should have remote access at all
 
-## Skills Demonstrated
+---
+
+## ✅ Skills Demonstrated
 - Offensive security tool usage (Hydra, xfreerdp, Nmap) in a
   controlled/isolated environment
 - Cross-platform log analysis (Linux syslog/PAM vs. Windows Security
