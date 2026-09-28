@@ -2,7 +2,7 @@
 
 # 🛡️ SOC Analyst Homelab
 
-**A hands-on, $0-budget Security Operations Center built from scratch — SIEM, EDR, cloud security, and real attack simulations.**
+**A hands-on, 0-budget Security Operations Center built from scratch — SIEM, EDR, cloud security, and real attack simulations.**
 
 ![Status](https://img.shields.io/badge/status-active-2563EB?style=for-the-badge)
 ![Wazuh](https://img.shields.io/badge/SIEM-Wazuh-2563EB?style=for-the-badge&logo=wazuh&logoColor=white)
